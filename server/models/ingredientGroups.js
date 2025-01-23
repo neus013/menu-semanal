@@ -21,7 +21,7 @@ const ingredientGroupSchema = new mongoose.Schema({
     type: Date,
     default: Date.now, // Última modificación
   },
-});
+}, { timestamps: true }); // Timestamps para createdAt y updatedAt
 
 
 const IngredientGroup = mongoose.model(

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const User = require("./user");
 
 const mealSchema = new mongoose.Schema({
   type: {
@@ -45,8 +46,9 @@ const menuSchema = new mongoose.Schema({
     type: String,
     required: true, // Nombre del menú (por ejemplo: "Dieta Mediterránea")
   },
+  user: {type: mongoose.Schema.Types.ObjectId, ref: "User",required: true},
   week: {
-    type: String, // Fecha inicial de la semana (por ejemplo "2025-03-01")
+    type: Date, // Fecha inicial de la semana (por ejemplo "2025-03-01")
     default: null, // Los menús predefinidos no necesitan una fecha asociada
   },
   days: [daySchema], // Lista de días con sus platos planificados y platos reales
@@ -62,7 +64,7 @@ const menuSchema = new mongoose.Schema({
     type: Date,
     default: Date.now, // Fecha de última actualización
   },
-});
+}, { timestamps: true }); // Timestamps para createdAt y updatedAt
 
 const Menu = mongoose.model("Menu", menuSchema);
 module.exports = Menu;

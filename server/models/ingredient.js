@@ -21,7 +21,15 @@ const ingredientSchema = new mongoose.Schema({
       "llegum",
     ],
   },
-});
+  createdAt: {
+    type: Date,
+    default: Date.now, // Fecha de creación
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now, // Última modificación
+  },
+}, { timestamps: true }); // Timestamps para createdAt y updatedAt
 
 const Ingredient = mongoose.model("Ingredient", ingredientSchema);
 module.exports = Ingredient;

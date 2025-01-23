@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 // Esquema de lista de la compra
 const shoppingListSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId, // Referencia al usuario propietario
+    ref: "User",
+    required: true,
+  },
   menuId: {
     type: mongoose.Schema.Types.ObjectId, // Referencia al menu
     ref: "Menu",
@@ -37,7 +42,7 @@ const shoppingListSchema = new mongoose.Schema({
     type: Date,
     default: Date.now, // Última modificación
   },
-});
+}, { timestamps: true }); // Timestamps para createdAt y updatedAt
 
 const ShoppingList = mongoose.model("ShoppingList", shoppingListSchema);
 module.exports = ShoppingList;

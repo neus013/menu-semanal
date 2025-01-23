@@ -7,9 +7,8 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  menus: [{ type: mongoose.Schema.Types.ObjectId, ref: "Menu" }],
-  shoppingLists: [{ type: mongoose.Schema.Types.ObjectId, ref: "ShoppingList" }],
-});
+}, { timestamps: true }); // Timestamps para createdAt y updatedAt
+
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

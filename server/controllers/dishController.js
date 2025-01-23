@@ -1,9 +1,10 @@
+
 const Dish = require("../models/dish");
 
 // Obtener todos los platos
 const getAllDishes = async (req, res) => {
   try {
-    const dishes = await Dish.find().populate("ingredients.item"); // Incluye información detallada de los ingredientes
+    const dishes = await Dish.find().populate("ingredients.ingredient"); // Incluye información detallada de los ingredientes
     res.status(200).json(dishes);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los platos", error });
@@ -40,7 +41,7 @@ const getDishById = async (req, res) => {
 
   try {
     const dish = await Dish.findById(id)
-      .populate("ingredients.item")
+      .populate("ingredients.ingredient")
       .populate("foodRestrictions");
     if (!dish) {
       return res.status(404).json({ message: "Plato no encontrado" });
@@ -62,7 +63,7 @@ const updateDish = async (req, res) => {
       { name, type, ingredients, foodRestrictions },
       { new: true, runValidators: true }
     )
-      .populate("ingredients.item")
+      .populate("ingredients.ingredient")
       .populate("foodRestrictions");
 
     if (!updatedDish) {

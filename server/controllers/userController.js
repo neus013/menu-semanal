@@ -2,6 +2,19 @@ const User = require("../models/user"); // Asegúrate de que la ruta sea correct
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+
+// Obtener todos los users
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find(); // Obtener todos los documentos de la colección
+    res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los users", error });
+  }
+};
+
 // Registrar un nuevo usuario
 const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
@@ -128,6 +141,7 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
+  getAllUsers,
   registerUser,
   loginUser,
   getUserById,

@@ -41,7 +41,7 @@ const dishSchema = new mongoose.Schema({
     type: Date,
     default: Date.now, // Fecha de última actualización
   },
-});
+}, { timestamps: true }); // Timestamps para createdAt y updatedAt
 
 const Dish = mongoose.model("Dish", dishSchema);
 module.exports = Dish;
