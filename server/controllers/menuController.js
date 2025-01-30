@@ -2,12 +2,12 @@ const Menu = require("../models/menu"); // Asegúrate de que la ruta sea correct
 
 // Obtener todos los menús de un usuario
 const getAllMenus = async (req, res) => {
-  const { userId } = req.params; // Obtener el userId de los parámetros
+  const { user } = req.params; // Obtener el userId de los parámetros
 
   try {
-    const menus = await Menu.find({ userId })
+    const menus = await Menu.find({ user })
       .populate("days.meals.plannedDish")
-      .populate("userId"); // Obtener todos los menús para el usuario
+      .populate("user"); // Obtener todos los menús para el usuario
     res.status(200).json(menus);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los menús", error });

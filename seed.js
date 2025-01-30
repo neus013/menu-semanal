@@ -1,130 +1,121 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-// Requerir los modelos
+const User = require("./server/models/user");
 const Ingredient = require("./server/models/ingredient");
 const Dish = require("./server/models/dish");
 const IngredientGroup = require("./server/models/ingredientGroups");
 const Menu = require("./server/models/menu");
 const ShoppingList = require("./server/models/shoppingList");
-const User = require("./server/models/user");
 
-
-// Conexión a MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => {
-    console.log("Conectado a MongoDB");
-    seedDatabase(); // Llamamos a la función para insertar datos
-  })
-  .catch((err) => {
-    console.error("Error al conectar a MongoDB", err);
-  });
+  .then(() => console.log("Conectado a MongoDB"))
+  .catch((err) => console.error("Error al conectar a MongoDB", err));
 
-// Función para insertar datos
 const seedDatabase = async () => {
+  const session = await mongoose.startSession(); // Iniciar sesión para la transacción
+  session.startTransaction(); // Comenzar la transacción
+
   try {
-    // 1. Insertar Ingredientes
+    // Crear ingredientes
     const tomato = new Ingredient({
-      name: "Tomàquet",
+      name: "Tomate",
+      type: "verdura",
+    });
+    const lettuce = new Ingredient({
+      name: "Lechuga",
       type: "verdura",
     });
     await tomato.save();
-
-    const lettuce = new Ingredient({
-      name: "Enciam",
-      type: "verdura",
-    });
     await lettuce.save();
+    console.log("Ingredientes creados:", tomato, lettuce);
 
-    // 2. Insertar Grupos de Ingredientes
+    // Crear grupo de ingredientes
     const vegetableGroup = new IngredientGroup({
-      name: "Verdures",
+      name: "Verduras",
       ingredients: [tomato._id, lettuce._id],
     });
     await vegetableGroup.save();
+    console.log("Grupo de ingredientes creado:", vegetableGroup);
 
-    // 3. Insertar un Plato
+    // Crear un plato (Dish)
     const dish1 = new Dish({
-      name: "Amanida",
+      name: "Ensalada",
       type: "dinar",
-      description: "Amanida d'enciam i tomàquet",
+      description: "Ensalada con tomate y lechuga",
       ingredients: [
-        {
-          ingredient: tomato._id, // Usamos el ObjectId del ingrediente
-          quantity: 50,
-          unit: "g",
-        },
-        {
-          ingredient: lettuce._id, // Usamos el ObjectId del ingrediente
-          quantity: 30,
-          unit: "g",
-        },
+        { ingredient: tomato._id, quantity: 50, unit: "g" },
+        { ingredient: lettuce._id, quantity: 30, unit: "g" },
       ],
     });
     await dish1.save();
+    console.log("Plato creado:", dish1);
 
-    // 5. Insertar un Menú
-    const menu1 = new Menu({
-      name: "Dieta Amanida",
-      week: "2025-01-01",
+    // Crear un usuario
+    const user = new User({
+      username: "juan123",
+      name: "Juan Pérez",
+      email: "juan@example.com",
+      googleId: "google12345",
+      passwordHash: "hashedPassword123", // Esto debe ser un hash real en producción
+    });
+    await user.save();
+    console.log("Usuario creado:", user);
+
+    // Crear un menú para el usuario
+    const menu = new Menu({
+      name: "Menu 1",
+      user: user._id,
+      week: "2025-03-01", // Semana de ejemplo
       days: [
         {
           day: "Dilluns",
           meals: [
-            {
-              type: "dinar",
-              plannedDish: dish1._id, // Referencia al plato
-              actualDish: null,
-            },
-            {
-              type: "sopar",
-              plannedDish: dish1._id, // Referencia al plato
-              actualDish: null,
-            },
-            // Añadir más comidas según sea necesario
+            { type: "esmorzar", plannedDish: dish1._id },
+            { type: "dinar", plannedDish: dish1._id },
           ],
         },
-        // Añadir más días según sea necesario
+        {
+          day: "Dimarts",
+          meals: [
+            { type: "esmorzar", plannedDish: dish1._id },
+            { type: "dinar", plannedDish: dish1._id },
+          ],
+        },
       ],
     });
-    await menu1.save();
+    await menu.save();
+    console.log("Menú creado:", menu);
 
-    // 6. Insertar una Lista de Compras
-    const shoppingList1 = new ShoppingList({
+    // Crear una lista de compras para el usuario
+    const shoppingList = new ShoppingList({
+      userId: user._id,
+      week: "2025-03-01", // Semana de ejemplo
       items: [
-        {
-          ingredient: tomato._id, // Referencia al ingrediente
-          quantity: 2,
-          unit: "ud",
-        },
-        {
-          ingredient: lettuce._id, // Referencia al ingrediente
-          quantity: 1,
-          unit: "ud",
-        },
+        { ingredient: tomato._id, quantity: 5, unit: "ud" },
+        { ingredient: lettuce._id, quantity: 2, unit: "ud" },
       ],
     });
-    await shoppingList1.save();
+    await shoppingList.save();
+    console.log("Lista de compras creada:", shoppingList);
 
-    // 4. Insertar un Usuario
-    const user1 = new User({
-      username: "neusg",
-      name: "Neus",
-      email: "neusg@example.com",
-      passwordHash: "password123",
-      googleId: "google12345",
-      menus: [menu1._id],
-      shoppingLists: [shoppingList1._id],
-    });
-    await user1.save();
-
-    console.log("Datos insertados correctamente");
-    mongoose.connection.close(); // Cerramos la conexión cuando terminamos
+    mongoose.connection.close(); // Cerrar la conexión a MongoDB
   } catch (error) {
-    console.error("Error al insertar datos", error);
+    // Si algo falla, hacer rollback
+    await session.abortTransaction();
+    console.error(
+      "Error durante la transacción. Todo ha sido revertido",
+      error
+    );
+
+    // Cerrar la sesión
+    session.endSession();
+    mongoose.connection.close(); // Cerrar la conexión a MongoDB
   }
 };
+
+seedDatabase();

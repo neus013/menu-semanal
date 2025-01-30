@@ -25,7 +25,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
     console.error('Error al conectar a MongoDB', err);
   });
 
-app.listen(3000, () => {
+app.listen(4000, () => {
   console.log('Servidor corriendo en el puerto 3000');
 });
 

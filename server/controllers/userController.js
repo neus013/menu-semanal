@@ -51,6 +51,7 @@ const registerUser = async (req, res) => {
 // Iniciar sesión de un usuario
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
+  console.log("Datos recibidos del login: ", req.body);
 
   if (!email || !password) {
     return res
@@ -71,6 +72,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Contraseña incorrecta" });
     }
 
+    console.log("JWT_SECRET:", process.env.JWT_SECRET);
     // Generar un token JWT
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
@@ -78,9 +80,23 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({ message: "Inicio de sesión exitoso", token });
   } catch (error) {
-    res.status(500).json({ message: "Error al iniciar sesión", error });
+    res.status(500).json({ message: "Error al iniciar sesión", error: error.message });
   }
 };
+
+// Obtener usuario con el token (desde el login)
+const getAuthenticatedUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select("-password"); // Excluye la contraseña
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el usuario", error });
+  }
+};
+
 
 // Obtener los detalles de un usuario
 const getUserById = async (req, res) => {
@@ -147,4 +163,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  getAuthenticatedUser,
 };
