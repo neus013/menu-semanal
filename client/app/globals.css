@@ -98,6 +98,64 @@
 }
 
 
+.bg-gradient-light {
+  background: 
+    radial-gradient(
+      circle at 50% 10%, 
+      rgba(243, 174, 53, 0.33) 5%, 
+      transparent 40%
+    ),radial-gradient(
+      circle at 70% 70%, 
+      rgba(243, 174, 53, 0.33) 1%, 
+      transparent 40%
+    ),radial-gradient(
+      circle at 30% 50%, 
+      rgba(243, 0, 130, 0.2) 10%, 
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 20% 20%, 
+      rgba(243, 73, 0, 0.2) 25%, 
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%, 
+      rgba(245, 40, 145, 0.2) 25%, 
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%, 
+      rgba(243, 73, 0, 0.2) 25%, 
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 50%, 
+      rgba(243, 56, 106, 0.2) 25%, 
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 20% 50%, 
+      rgba(243, 73, 0, 0.2) 25%, 
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 20% 90%, 
+      rgba(243, 0, 130, 0.2) 25%, 
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 50%, 
+      rgba(255, 255, 255, 0.6) 100%, 
+      transparent 100%
+    ),
+    ;
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100vh; 
+  
+}
+
+
 body {
   color: var(--foreground);
   background: var(--background);
